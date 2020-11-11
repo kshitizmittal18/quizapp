@@ -170,18 +170,17 @@ class QuestionsController extends Controller
     public function storeUsingApi(){
         $obj = new QuestionService;
         $results = $obj->get();
-        $allTopics = Topic::pluck("title","id")->all();
         foreach ($results as $key => $result) {
             /*
             * Checking if topic already exists or not.
             * If not exists then adding that topic in local DB
             */
-            if (!in_array($result['category'], $allTopics)) {
+            $topic = Topic::where(["title" => $result['category']])->get();
+            if ($topic->isEmpty()) {
                 $requestTopic = ["_token" => csrf_token(), "title" => $result['category']];
                 $storeTopic = Topic::create($requestTopic);
             }
         }
-        
 
         $allTopics = Topic::pluck("title","id")->all();
         try{
